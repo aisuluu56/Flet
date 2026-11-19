@@ -10,8 +10,11 @@ COURSES = [
     {"name": "SQL Basics", "level": "Начальный"},
     {"name": "API Design", "level": "Продвинутый"},
     {"name": "Async Python", "level": "Продвинутый"},
+    {"name": "Web Dev", "level": "Начальный"},
+    {"name": "Django", "level": "Продвинутый"},
+    {"name": "Data Science", "level": "Продвинутый"},
+    {"name": "Алгоритмы", "level": "Начальный"},
 ]
-
 
 def main(page: ft.Page):
     search = ft.TextField(label="Поиск")
@@ -19,15 +22,29 @@ def main(page: ft.Page):
     cards = ft.Column()
 
     def render(e=None):
-        cards.controls = [ft.Text(c["name"]) for c in COURSES]
-        # TODO: отфильтруйте список по двум условиям.
+        query = search.value.lower().strip() if search.value else ""
+        cards.controls.clear()
+
+        for c in COURSES:
+            match_name = query in c["name"].lower()
+            
+            match_level = True
+            if only_easy.value:
+                match_level = (c["level"] == "Начальный")
+                
+            if match_name and match_level:
+                cards.controls.append(ft.Text(c["name"]))
+
+        if not cards.controls:
+            cards.controls.append(ft.Text("Ничего не найдено", color=ft.Colors.RED))
+
+        page.update()
 
     search.on_change = render
     only_easy.on_change = render
     render()
     page.add(search, only_easy, cards)
     # TODO: расширьте данные хотя бы до 8 курсов.
-
 
 if __name__ == "__main__":
     ft.run(main)

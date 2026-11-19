@@ -15,10 +15,20 @@ PRODUCTS = [
 
 def main(page: ft.Page):
     page.title = "Комплектующие"
-    cards = ft.Column(spacing=10)
+    cards = ft.Column(spacing=10, scroll=ft.ScrollMode.AUTO)
     for product in PRODUCTS:
+        if product["stock"] == 0:
+            stock_text = ft.Text ("Нет в наличии", color=ft.Colors.RED, weight=ft.FontWeight.BOLD)
+        else:
+            stock_text = ft.Text(f"Остаток: {product['stock']} шт")
         cards.controls.append(ft.Card(content=ft.Container(
-            padding=12, content=ft.Text(product["name"]),
+            padding=12, content=ft.Row(controls=[
+                ft.Icon(ft.Icons.COMPUTER, size=32, color=ft.Colors.BLUE),
+                ft.Column(controls=[ft.Text(product["name"], weight=ft.FontWeight.BOLD, size=16),
+                ft.Text(f"Цена: {product['price']} р"),
+                stock_text],
+                spacing=5)
+            ]),
         )))
     page.add(cards)
     # TODO: иконка, цена, остаток и условное выделение.
